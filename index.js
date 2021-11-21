@@ -1,4 +1,4 @@
-var express = require('express');
+/*var express = require('express');
 var router = express.Router();
 
 // mongoose is a API wrapper overtop of mongodb, just like
@@ -33,8 +33,8 @@ mongoose.connect(dbURI, options).then(
 
 
 
-/* GET home page. */
+// GET home page.
 router.get('/', function(req, res) {
   res.sendFile('index.html');
  
-});
+});*/
