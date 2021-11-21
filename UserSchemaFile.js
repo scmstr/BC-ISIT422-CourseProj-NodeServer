@@ -6,7 +6,7 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
-    userid:{
+    userID:{
         type: Number,
         required: true
     },
@@ -15,9 +15,11 @@ const UserSchema = new Schema({
         required: true
     },
     myGames:{
-        type: Array[Number],
+        type:[Number],
         required: true
     }
-});
+},
+{ collection: 'UserCollection' }
+);
 
-module.exports = mongoose.model("Users", UserSchema);
+module.exports = mongoose.model("UserSchema", UserSchema);
