@@ -1,17 +1,43 @@
-
-//////////any route will start with these two//////////
 var express = require('express');
 var router = express.Router();
 
-// for this version, we will keep data on server in an array
-// heroArray = [];
-userArray = [];
+// mongoose is a API wrapper overtop of mongodb, just like
+// .ADO.Net is a wrapper over raw SQL server interface
+const mongoose = require("mongoose");
 
-// //constructor
-// function Hero(pId, pName) {
-//   this.id= pId;
-//   this.name = pName;
-// }
+const GameSchema = require("../GameSchemaFile");
+
+const UserSchema = require("../UserSchemaFile");
+
+
+// edited to include my non-admin, user level account and PW on mongo atlas
+// and also to include the name of the mongo DB that the collection is in (TaskDB)
+const dbURI =
+   "mongodb+srv://user_Khalid:<password>@khalidcluster.9zcle.mongodb.net/Game?retryWrites=true&w=majority";
+   //"mongodb+srv://user_Khalid:<password>@khalidcluster.9zcle.mongodb.net/User?retryWrites=true&w=majority";
+
+// Make Mongoose use `findOneAndUpdate()`. Note that this option is `true`
+// by default, you need to set it to false.
+mongoose.set('useFindAndModify', false);
+
+const options = {
+  reconnectTries: Number.MAX_VALUE,
+  poolSize: 10
+};
+
+mongoose.connect(dbURI, options).then(
+  () => {
+    console.log("Database connection established!");
+  },
+  err => {
+    console.log("Error connecting Database instance due to: ", err);
+  }
+);
+
+
+// for this version, we will keep data on server in an array
+userArray = [];
+gameArray = [];
 
 function Game(pGameID, pDateTime){
   this.gameID = pGameID;
@@ -25,9 +51,38 @@ function User(pUID, pUsername, pGames) {
 }
 
 //prepop for userArray
-userArray.push( new User (2, 'Neo', [new Game(3, "aDateTime1"), new Game(4, "aDateTime2"), new Game(5, "aDateTime3")]  ) );
+/* userArray.push( new User (2, 'Neo', [new Game(3, "aDateTime1"), new Game(4, "aDateTime2"), new Game(5, "aDateTime3")]  ) );
 userArray.push( new User (4, 'MoRpHeUs', new Game(6, "aDateTime4")) );
 userArray.push( new User (6, 'A.Smith', null) );
+ */
+
+router.get('/games', function(req, res) {
+  // res.status(200).json(gameArray);
+  //   console.log(gameArray);
+    GameSchema.find({}, (err, AllGames) => {
+      if (err) {
+        console.log(err);
+        res.status(500).send(err);
+      }
+      gameArray = AllGames;
+      console.log(gameArray)
+      res.status(200).json(gameArray);
+    })
+});
+
+router.get('/users', function(req, res) {
+  // res.status(200).json(userArray);
+  //   console.log(userArray);
+    UserSchema.find({}, (err, AllUsers) => {
+      if (err) {
+        console.log(err);
+        res.status(500).send(err);
+      }
+      userArray = AllUsers;
+      console.log(userArray)
+      res.status(200).json(userArray);
+    })
+});
 
 
 //get myGames by UID
@@ -46,7 +101,7 @@ router.get('/myGames/:UID', function(req, res) {
       res.status(500).send("no such user");
       }
 
-});
+}); 
 
 
 
