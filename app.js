@@ -1,6 +1,17 @@
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
+
+
+//require cors!!!!!!!!
+const cors = require('cors');
+
+//cors options!!!!!!!
+const corsOptions = {
+	origin: 'http://localhost:4200',
+	optionsSuccessStatus: 200
+}
+
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
@@ -8,6 +19,9 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
 var app = express();
+
+//attatch cors!!!!!!
+app.use(cors(corsOptions));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
