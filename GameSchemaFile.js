@@ -22,6 +22,8 @@ const GameSchema = new Schema({
         type: String,
         required: true
     }
-});
+},
+{ collection: 'GameCollection' }
+);
 
-module.exports = mongoose.model("Notes", GameSchema);
+module.exports = mongoose.model("GameSchema", GameSchema);
