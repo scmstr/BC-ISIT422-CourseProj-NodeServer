@@ -3,10 +3,10 @@ var express = require('express');
 var path = require('path');
 
 
-//require cors!!!!!!!!
+
 const cors = require('cors');
 
-//cors options!!!!!!!
+//cors 
 const corsOptions = {
 	origin: 'http://localhost:4200',
 	optionsSuccessStatus: 200
@@ -20,7 +20,7 @@ var usersRouter = require('./routes/users');
 
 var app = express();
 
-//attatch cors!!!!!!
+
 app.use(cors(corsOptions));
 
 // view engine setup

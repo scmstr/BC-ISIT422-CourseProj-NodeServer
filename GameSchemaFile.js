@@ -6,24 +6,32 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const GameSchema = new Schema({
-    userID:{
-        type: Number,
-        required: true
-    },
     gameID:{
         type: Number,
         required: true
     },
-    noteContent:{
+    gameName:{
         type: String,
         required: true
     },
-    noteDate:{
+    coverArt:{
+        type: String,
+        required: true
+    },
+    releaseDate:{
+        type: String,
+        required: true
+    },
+    communityRating:{
+        type: String,
+        required: true
+    },
+    summary:{
         type: String,
         required: true
     }
 },
-{ collection: 'GameCollection' }
+{ collection: 'games' }
 );
 
 module.exports = mongoose.model("GameSchema", GameSchema);

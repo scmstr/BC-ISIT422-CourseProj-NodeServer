@@ -15,11 +15,11 @@ const UserSchema = new Schema({
         required: true
     },
     myGames:{
-        type:[Number],
+        type:[{gameID: Number},{dateTime: String}],
         required: true
     }
 },
-{ collection: 'UserCollection' }
+{ collection: 'users' }
 );
 
 module.exports = mongoose.model("UserSchema", UserSchema);
