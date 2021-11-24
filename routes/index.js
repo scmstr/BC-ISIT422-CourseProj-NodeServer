@@ -110,7 +110,7 @@ router.get('/myGames/:userID', function(req, res) {
       if( usersArray[i].userID == req.params.userID)
       {
         console.log(usersArray[i]);
-        found = true
+        found = true;
         res.status(200).json(usersArray[i].myGames);
       }
     }
