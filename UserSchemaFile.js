@@ -22,9 +22,14 @@ const UserSchema = new Schema({
         type: String,
         required: true
     },
-    myGames:
-        [`{"gameID": Number},{"dateTime": String}`]  //need specific property names.   Trying literals with ` since apparently this makes them key:value pairs??? maybe we can try to do that in mongo later.
-
+    password:{
+        type: String,
+        required: true
+    },
+    myGames:{
+        type: [],
+        required: true
+    }
 },
 { collection: 'users' }
 );

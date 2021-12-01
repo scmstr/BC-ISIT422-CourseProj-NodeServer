@@ -121,6 +121,27 @@ router.get('/myGames/:userID', function(req, res) {
 }); 
 
 
+/////////////////
+//node stuff:
+
+//need:
+  //create new user method - generates unique UID!
+  //checkAuth method
+  //get all notes for a user
+  //add note
+  //???update a note?
+  //add a game to a user
+  //remove a game from a user
+  //update a game for a user
+
+
+//sync game schema to:
+  //  gameID, dateTime, gameName
+
+//sync user schema to: 
+  //UID, username, password, myGames
+
+
 
 
 
