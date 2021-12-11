@@ -1,25 +1,33 @@
 const mongoose = require("mongoose");
+const { schema } = require("./GameSchemaFile");
 
 // here we define a schema for our document database
 // mongo does not need this, but using mongoose and requiring a 
 // schema will enforce consistency in all our documents (records)
 const Schema = mongoose.Schema;
 
-const UserSchema = new Schema({
+const NoteSchema = new Schema({
     userID:{
         type: Number,
         required: true
     },
-    userName:{
+    gameID:{
+        type: Number,
+        required: true
+    },
+    noteID:{
+        type: Number,
+        required: true
+    },
+    noteContent:{
         type: String,
         required: true
     },
-    myGames:{
-        type:[],
+    noteDate:{
+        type: String,
         required: true
     }
 },
-{ collection: 'users' }
+{ collection: 'notes' }
 );
-
-module.exports = mongoose.model("UserSchema", UserSchema);
+module.exports = mongoose.model("NoteSchema", NoteSchema);

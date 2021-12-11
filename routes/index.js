@@ -8,6 +8,7 @@ const mongoose = require("mongoose");
 
 
 const GameSchema = require("../GameSchemaFile");
+const NoteSchemaFile = require('../NoteSchemaFile');
 
 
 
@@ -120,8 +121,62 @@ router.get('/myGames/:userID', function(req, res) {
   })
 }); 
 
+//verify login
+router.get('/verifyLogin/:username/:password', function(req, res){
+  UserSchema.find({}, (err, AllUsers) =>{
 
+  })
+  var data = {
+    "verifyLogin":{
+      "2": req.params.username,
+      "password1": req.params.password
+    }
+  };
+  send.json(data);
+});
 
+//Update our notes
+/* router.put('/notes/:gameID', function(req, res){
+  var changedNote = req.body;
+
+  NoteSchemaFile.findOneAndUpdate(
+    {gameID: changedNote},
+    changedNote,
+    {new: false},
+    (err, updatedNote) => {
+      if(err){
+        res.status(500).send(err);
+      }
+      res.status(200).json(updatedNote);
+    }
+  )
+
+}); */
+
+//delete a game from the user's list
+router.delete('/myGames/:id', function (req, res){
+GameSchema.deleteOne({id: req.params}, (err, note) =>{
+  if(err){
+    res.status(404).send(err);
+  }
+  res.status(200).json({message: "Game successfully deleted"});
+});
+});
+
+//post a new note
+router.post('/noteDetails', function(req, res){
+  var newNote = (req.body);
+  insertNote = new NoteSchemaFile(newNote);
+  console.log(insertNote);
+  insertNote.save((err, note)=>{
+    if(err){
+      res.status(500).send(err);
+    }
+    else{
+      res.status(201).json(note);
+    }
+  });
+});
 
 
 
