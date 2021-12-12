@@ -27,7 +27,11 @@ const UserSchema = new Schema({
         required: true
     },
     myGames:{
+<<<<<<< HEAD
         type: [],
+=======
+        type:[],
+>>>>>>> 53ccb59ec2da860d4847b4f6ca311933ae875724
         required: true
     }
 },
