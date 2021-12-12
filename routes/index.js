@@ -6,21 +6,20 @@ var router = express.Router();
 const mongoose = require("mongoose");
 
 
-
+//schemas
 const GameSchema = require("../GameSchemaFile");
-
-
-
 const UserSchema = require("../UserSchemaFile");
 
 
 // edited to include my non-admin, user level account and PW on mongo atlas
 // and also to include the name of the mongo DB that the collection is in (TaskDB)
 const dbURI =
- 
-  
 
+  
   "mongodb+srv://bc422user:bc422proj@clusterbc422.exlyq.mongodb.net/GameReminderDB?retryWrites=true&w=majority";
+//
+
+
 
 // Make Mongoose use `findOneAndUpdate()`. Note that this option is `true`
 // by default, you need to set it to false.
@@ -30,6 +29,7 @@ const options = {
   reconnectTries: Number.MAX_VALUE,
   poolSize: 10
 };
+
 
 mongoose.connect(dbURI, options).then(
   () => {
@@ -46,9 +46,11 @@ usersArray = [];
 gamesArray = [];
 notesArray = [];
 
-function Game(pGameID, pDateTime){
+
+function Game(pGameID, pDateTime, pGameName){
   this.gameID = pGameID;
   this.dateTime = pDateTime;
+  this.gameName = pGameName;
 }
 
 function User(pUserID, pUsername, pGames) {
@@ -133,13 +135,18 @@ router.get('/myGames/:userID', function(req, res) {
   //add a game to a user
   //remove a game from a user
   //update a game for a user
+//
 
 
 //sync game schema to:
   //  gameID, dateTime, gameName
+//
 
 //sync user schema to: 
   //UID, username, password, myGames
+//
+
+
 
 
 
