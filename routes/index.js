@@ -50,9 +50,13 @@ notesArray = [];
 
 function Game(pGameID, pDateTime, pGameName){
   this.gameID = pGameID;
-  this.dateTime = pDateTime;
   this.gameName = pGameName;
+  this.dateTime = pDateTime;
 }
+
+
+
+
 
 function User(pUserID, pUsername, pGames) {
   this.userID = pUserID;
@@ -148,6 +152,9 @@ router.get('/getMyGames/:userID', function(req, res) {
       res.status(500).send("no such user");
     }
 
+    console.log("entire usersArray: ");
+    console.log(usersArray);
+
   })
 }); 
 
@@ -181,16 +188,21 @@ router.get('/isGameInMyGames/:gameID/:userID', function(req, res) {
           }
           else
           {
-            console.log("game is NOT found");
+            console.log("a different game was found...");
             found = false;
           }
           //looking through all the games
         }
+
+        if (found == false) {
+          console.log("does not exist on user");
+        }
+
         //once the user is found...
       }
     }
 
-
+    console.log("isGameInMyGames finished running-------------------");
     res.status(200).send(found);
   })
 })
@@ -198,8 +210,130 @@ router.get('/isGameInMyGames/:gameID/:userID', function(req, res) {
 
 
 
-//lets make it so we can ADD a game to a user's game's list - will utilize 
+//lets make it so we can ADD a game to a user's myGames list - NEEDS TIMESTAMP ON GAME CONSTRUCTOR - 
+router.get('/addGame/:userID/:gameID/:gameName', function(req, res) {
+  console.log("addGame endpoint accessed.");
+  
 
+  UserSchema.find({}, (err, AllUsers) => {
+
+    usersArray = AllUsers;
+    let found = false;     //if true, gameID already exists
+    let selectedUser = -1; //if i not -1, user is found
+    let message = "";
+    let mongoUserID;
+
+
+    //////////////////////////////////////////////
+    ///////////////this chunk is//////////////////
+    ////stolen and edited from isGameInMyGames////
+    //////////////////////////////////////////////
+    for (let i = 0; i < usersArray.length; i++) { //go through every user...
+      
+      if (usersArray[i].userID == req.params.userID) { //finding a specific user...
+        selectedUser = i;
+        mongoUserID = usersArray[i]._id;
+
+        //once the desired user is found...
+
+        for (let j = 0; j < usersArray[i].myGames.length; j++) { //go through the "i" user's "myGames" list... "j" is the game.
+          
+          if (usersArray[i].myGames[j][0] == Number(req.params.GameID)) { //finding a specific game on the "i" user...
+            found = true;
+            break; //STOP LOOKING!!!
+            
+          }
+          else
+          {
+            found = false;
+          }
+          //looking through all the games
+        }
+
+        //user is FOUND, search for game is COMPLETE ...
+      }
+
+      console.log("looked at users and games, proceeding to try to push a new game onto mongo");
+      console.log("game trying to push up is: ");
+      console.log(new Game(req.params.gameID, CreateTimestamp(), req.params.gameName));
+
+
+
+      //////////////////////////////////////////////////////
+      //// [new code] to decide to save the game or not ////
+      //////////////////////////////////////////////////////
+      if ((found == false) && (selectedUser != -1)) {
+        //if gameID doesnt exist in a found user's list....
+        message = "Success!"; 
+        
+
+
+        //save the mongo "userID _id"
+        usersArray[selectedUser].myGames.push(new Array(req.params.gameID, CreateTimestamp(), req.params.gameName));
+
+        //UserSchema.findByIdAndUpdate();
+
+
+
+        /////////////////////////////////////////////////////////////
+        //// [new code] updates the user's myGames list !!!!!!!! ////
+        /////////////////////////////////////////////////////////////
+        UserSchema.findByIdAndUpdate(mongoUserID, { myGames: usersArray[selectedUser].myGames },
+          function (err, docs) {
+            if (err){
+              console.log(err)
+            }
+            else{
+              console.log("Updated User : ", docs);
+            }
+          }
+        );
+
+      }
+      else if ((found == true) && (selectedUser != -1)) {
+        //if the game already exists in a found user's list...
+        message = "Error, game already exists.";
+      }
+      else {
+        //if no user is found...
+        message = "User not found.";
+      }
+
+
+
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    console.log("addGame finished running-------------------------------");
+    res.status(200).send(message);
+
+    
+  })
+}); 
 
 
 
@@ -337,6 +471,14 @@ module.exports = router;
   //sync user schema to: 
     //UID, username, password, myGames
   //
+//
 
 
+function CreateTimestamp() {
+  let output = Date;
+  let timestamp = Date.now();
+  console.log("timestamp output: ");
+  console.log(timestamp);
+  return timestamp;
+}
 
