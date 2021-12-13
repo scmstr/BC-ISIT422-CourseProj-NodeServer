@@ -8,9 +8,12 @@ const cors = require('cors');
 
 //cors 
 const corsOptions = {
-	origin: 'http://localhost:4200',
+	origin: '*',
+  headers: '*',
 	optionsSuccessStatus: 200
 }
+
+
 
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
