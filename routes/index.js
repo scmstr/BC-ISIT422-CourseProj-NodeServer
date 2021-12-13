@@ -5,16 +5,11 @@ var router = express.Router();
 // .ADO.Net is a wrapper over raw SQL server interface
 const mongoose = require("mongoose");
 
-
-//schemas
+/////////////
+////schemas
+/////////////
 const GameSchema = require("../GameSchemaFile");
-<<<<<<< HEAD
-=======
 const NoteSchemaFile = require('../NoteSchemaFile');
-
-
-
->>>>>>> 53ccb59ec2da860d4847b4f6ca311933ae875724
 const UserSchema = require("../UserSchemaFile");
 
 
@@ -22,15 +17,14 @@ const UserSchema = require("../UserSchemaFile");
 // and also to include the name of the mongo DB that the collection is in (TaskDB)
 const dbURI =
 
-  
   "mongodb+srv://bc422user:bc422proj@clusterbc422.exlyq.mongodb.net/GameReminderDB?retryWrites=true&w=majority";
 //
-
 
 
 // Make Mongoose use `findOneAndUpdate()`. Note that this option is `true`
 // by default, you need to set it to false.
 mongoose.set('useFindAndModify', false);
+
 
 const options = {
   reconnectTries: Number.MAX_VALUE,
@@ -73,11 +67,18 @@ function Note(pDateTime, pNoteContent, pUID, pGameID) {
   this.gameID = pGameID;
 }
 
-/* GET home page. */
+
+
+
+
+// //GET home page. - don't think we need this for GamerHelperApp?
 // router.get('/', function(req, res) {
 //   res.sendFile('respond with a resource');
  
 // });
+
+
+
 
 
 router.get('/games', function(req, res) {
@@ -94,6 +95,9 @@ router.get('/games', function(req, res) {
     })
 });
 
+
+
+
 router.get('/users', function(req, res) {
 
 
@@ -109,58 +113,102 @@ router.get('/users', function(req, res) {
 });
 
 
-//get myGames by UID
-router.get('/myGames/:userID', function(req, res) {
+
+
+
+//get myGames by userID - WORKS
+router.get('/getMyGames/:userID', function(req, res) {
+
   let found = false;
-  UserSchema.find({}, (err, AllUsers) => {
-    usersArray = AllUsers;
+
+  
+  UserSchema.find({}, (err, AllUsers) => { // "UserSchema" accesses the "users" collection because it's hardcoded to do so inside of the UserSchema.js file
+
+    usersArray = AllUsers; // "AllUsers" must be the equivalent of the entire "users" collection?
+    //                     // so that must mean that this line must download the entire collection into the "usersArray" var?                            
+    //                     //     thus, usersArray probably follows the UserSchema object type Schema for every row/item. 
+
+
     for(var i=0; i < usersArray.length; i++)
     {
-      if( usersArray[i].userID == req.params.userID)
+      if( usersArray[i].userID == req.params.userID) //this line's "req" is the data that is attatched to the endpoint when it's accessed (request)
+      //                                             //the "params" looks in the endpoint for things that follow directly after a : colon
+      //                                             //and then the "userID" refers to this endpoint's [/getMyGames/:userID] <----- where the userID is defined.
       {
         console.log(usersArray[i]);
         found = true;
-        res.status(200).json(usersArray[i].myGames);
+        res.status(200).json(usersArray[i].myGames); // this line either sets or actually sends the response. 
+        //                                           // it turns the "i" row's "myGames" (is actually a list in and of itself) into json, attatches that as (im assuming?) the body of the response.
+        //                                           // this line also sets the response's status as a "200" which i think is "ok"
       }
     }
+
+
     if(found === false){
       res.status(500).send("no such user");
     }
+
   })
 }); 
+
+
+
+//check if this gameID is in this userID's myGames list - works
+router.get('/isGameInMyGames/:gameID/:userID', function(req, res) {
+
+  let found = "no user found";
+
+  UserSchema.find({}, (err,AllUsers) => {
+
+    //get the users table/collection
+    usersArray = []; //clear it
+    usersArray = AllUsers; //fill it with fresh data
+
+    //look through it for this userID
+    for (let i = 0; i < usersArray.length; i++) { //go through every user...
+      
+      if (usersArray[i].userID == req.params.userID) { //finding a specific user...
+
+        //once the desired user is found...
+
+        for (let j = 0; j < usersArray[i].myGames.length; j++) { //go through the "i" user's "myGames" list... "j" is the game.
+          
+          if (usersArray[i].myGames[j][0] == Number(req.params.gameID)) { //finding a specific game on the "i" user...
+            found = true;
+            console.log("game is found");
+            break; //STOP LOOKING!!!
+            
+          }
+          else
+          {
+            console.log("game is NOT found");
+            found = false;
+          }
+          //looking through all the games
+        }
+        //once the user is found...
+      }
+    }
+
+
+    res.status(200).send(found);
+  })
+})
+
+
+
+
+//lets make it so we can ADD a game to a user's game's list - will utilize 
+
+
+
+
+
 
 //verify login
 router.get('/verifyLogin/:username/:password', function(req, res){
   UserSchema.find({}, (err, AllUsers) =>{
 
-<<<<<<< HEAD
-/////////////////
-//node stuff:
-
-//need:
-  //create new user method - generates unique UID!
-  //checkAuth method
-  //get all notes for a user
-  //add note
-  //???update a note?
-  //add a game to a user
-  //remove a game from a user
-  //update a game for a user
-//
-
-
-//sync game schema to:
-  //  gameID, dateTime, gameName
-//
-
-//sync user schema to: 
-  //UID, username, password, myGames
-//
-
-
-
-
-=======
   })
   var data = {
     "verifyLogin":{
@@ -170,6 +218,10 @@ router.get('/verifyLogin/:username/:password', function(req, res){
   };
   send.json(data);
 });
+
+
+
+
 
 //Update our notes
 /* router.put('/notes/:gameID', function(req, res){
@@ -186,12 +238,17 @@ router.get('/verifyLogin/:username/:password', function(req, res){
       res.status(200).json(updatedNote);
     }
   )
->>>>>>> 53ccb59ec2da860d4847b4f6ca311933ae875724
 
 }); */
 
+
+
+
+
+
+
 //delete a game from the user's list
-router.delete('/myGames/:id', function (req, res){
+router.delete('/deleteGame/:userID/:gameID', function (req, res){
 GameSchema.deleteOne({id: req.params}, (err, note) =>{
   if(err){
     res.status(404).send(err);
@@ -200,8 +257,13 @@ GameSchema.deleteOne({id: req.params}, (err, note) =>{
 });
 });
 
+
+
+
+
+
 //post a new note
-router.post('/noteDetails', function(req, res){
+router.post('/noteDetails/:note', function(req, res){
   var newNote = (req.body);
   insertNote = new NoteSchemaFile(newNote);
   console.log(insertNote);
@@ -217,4 +279,44 @@ router.post('/noteDetails', function(req, res){
 
 
 
+
+
 module.exports = router;
+
+
+
+
+/////////////////
+  //node stuff:
+
+  //need:
+    //create new user method - generates unique userID!
+    //checkAuth method
+    //get all notes for a user
+    //add note
+    //???update a note?
+    //add a game to a user
+    //remove a game from a user
+    //update a game for a user
+  //
+
+
+  //sync game schema to:
+    //  gameID, dateTime, gameName
+  //
+
+  //sync user schema to: 
+    //UID, username, password, myGames
+  //
+
+
+
+
+
+
+
+  //  [
+  //    [4, "Tue Nov 23 2021 00:00:00 GMT-0800 (Pacific Standard Time)", ""],
+  //    [5, "Tue Nov 23 2021 00:00:00 GMT-0800 (Pacific Standard Time)", ""],
+  //    [6, "Tue Nov 23 2021 00:00:00 GMT-0800 (Pacific Standard Time)", ""]
+  //  ]

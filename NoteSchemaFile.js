@@ -6,28 +6,31 @@ const { schema } = require("./GameSchemaFile");
 // schema will enforce consistency in all our documents (records)
 const Schema = mongoose.Schema;
 
-const NoteSchema = new Schema({
-    userID:{
-        type: Number,
-        required: true
+const NoteSchema = new Schema(
+    {
+        userID:{
+            type: Number,
+            required: true
+        },
+        gameID:{
+            type: Number,
+            required: true
+        },
+        noteID:{
+            type: Number,
+            required: true
+        },
+        noteContent:{
+            type: String,
+            required: true
+        },
+        noteDate:{
+            type: String,
+            required: true
+        }
     },
-    gameID:{
-        type: Number,
-        required: true
-    },
-    noteID:{
-        type: Number,
-        required: true
-    },
-    noteContent:{
-        type: String,
-        required: true
-    },
-    noteDate:{
-        type: String,
-        required: true
+    { 
+        collection: 'notes' 
     }
-},
-{ collection: 'notes' }
 );
 module.exports = mongoose.model("NoteSchema", NoteSchema);

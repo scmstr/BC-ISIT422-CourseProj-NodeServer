@@ -6,6 +6,8 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const GameSchema = new Schema({
+
+
     gameID:{
         type: Number,
         required: true

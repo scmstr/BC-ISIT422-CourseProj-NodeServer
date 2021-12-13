@@ -13,29 +13,28 @@ const Schema = mongoose.Schema;
 // }
 
 
-const UserSchema = new Schema({
-    userID:{
-        type: Number,
-        required: true
+const UserSchema = new Schema(
+    {
+        userID:{
+            type: Number,
+            required: true
+        },
+        userName:{
+            type: String,
+            required: true
+        },
+        password:{
+            type: String,
+            required: true
+        },
+        myGames:{
+            type:[],
+            required: true
+        }
     },
-    userName:{
-        type: String,
-        required: true
-    },
-    password:{
-        type: String,
-        required: true
-    },
-    myGames:{
-<<<<<<< HEAD
-        type: [],
-=======
-        type:[],
->>>>>>> 53ccb59ec2da860d4847b4f6ca311933ae875724
-        required: true
+    { 
+        collection: 'users' 
     }
-},
-{ collection: 'users' }
 );
 
 
