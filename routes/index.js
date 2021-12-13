@@ -153,7 +153,7 @@ router.get('/getMyGames/:userID', function(req, res) {
 
 
 
-//check if this gameID is in this userID's myGames list - works
+//check if this gameID is in this userID's myGames list - WORKS
 router.get('/isGameInMyGames/:gameID/:userID', function(req, res) {
 
   let found = "no user found";
@@ -200,6 +200,35 @@ router.get('/isGameInMyGames/:gameID/:userID', function(req, res) {
 
 //lets make it so we can ADD a game to a user's game's list - will utilize 
 
+
+
+
+
+//get a userID's username - WORKS
+router.get('/getMyUsername/:userID', function(req, res) {
+
+  let found = false;
+
+  UserSchema.find({}, (err, AllUsers) => {
+
+    usersArray = AllUsers;
+
+
+    for(var i=0; i < usersArray.length; i++)
+    {
+      if( usersArray[i].userID == req.params.userID) 
+      {
+        found = true;
+        res.status(200).json(usersArray[i].userName); 
+      }
+    }
+
+    if(found === false){
+      res.status(500).send("no such user");
+    }
+
+  })
+}); 
 
 
 
@@ -311,12 +340,3 @@ module.exports = router;
 
 
 
-
-
-
-
-  //  [
-  //    [4, "Tue Nov 23 2021 00:00:00 GMT-0800 (Pacific Standard Time)", ""],
-  //    [5, "Tue Nov 23 2021 00:00:00 GMT-0800 (Pacific Standard Time)", ""],
-  //    [6, "Tue Nov 23 2021 00:00:00 GMT-0800 (Pacific Standard Time)", ""]
-  //  ]
