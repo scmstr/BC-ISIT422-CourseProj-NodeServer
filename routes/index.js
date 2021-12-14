@@ -82,36 +82,36 @@ function Note(pDateTime, pNoteContent, pUID, pGameID) {
 
 
 
-router.get('/games', function(req, res) {
+// router.get('/games', function(req, res) {
 
 
-    GameSchema.find({}, (err, AllGames) => {
-      if (err) {
-        console.log(err);
-        res.status(500).send(err);
-      }
-      gamesArray = AllGames;
-      console.log(gamesArray)
-      res.status(200).json(gamesArray);
-    })
-});
+//     GameSchema.find({}, (err, AllGames) => {
+//       if (err) {
+//         console.log(err);
+//         res.status(500).send(err);
+//       }
+//       gamesArray = AllGames;
+//       console.log(gamesArray)
+//       res.status(200).json(gamesArray);
+//     })
+// });
 
 
 
 
-router.get('/users', function(req, res) {
+// router.get('/users', function(req, res) {
 
 
-    UserSchema.find({}, (err, AllUsers) => {
-      if (err) {
-        console.log(err);
-        res.status(500).send(err);
-      }
-      usersArray = AllUsers;
-      console.log(usersArray)
-      res.status(200).json(usersArray);
-    })
-});
+//     UserSchema.find({}, (err, AllUsers) => {
+//       if (err) {
+//         console.log(err);
+//         res.status(500).send(err);
+//       }
+//       usersArray = AllUsers;
+//       console.log(usersArray)
+//       res.status(200).json(usersArray);
+//     })
+// });
 
 
 
@@ -154,7 +154,6 @@ router.get('/getMyGames/:userID', function(req, res) {
 
   })
 }); 
-
 
 
 //check if this gameID is in this userID's myGames list - WORKS
@@ -218,9 +217,7 @@ router.get('/isGameInMyGames/:gameID/:userID', function(req, res) {
 })
 
 
-
-
-//lets make it so we can ADD a game to a user's myGames list - NEEDS TIMESTAMP ON GAME CONSTRUCTOR - WORKS
+//ADD GAME to a user's myGames list - NEEDS TIMESTAMP ON GAME CONSTRUCTOR - WORKS
 router.get('/addGame/:userID/:gameID/:gameName', function(req, res) {
   console.log("addGame endpoint accessed.");
   
@@ -234,10 +231,6 @@ router.get('/addGame/:userID/:gameID/:gameName', function(req, res) {
     let mongoUserID;
 
 
-    //////////////////////////////////////////////
-    ///////////////this chunk is//////////////////
-    ////stolen and edited from isGameInMyGames////
-    //////////////////////////////////////////////
     for (let i = 0; i < usersArray.length; i++) { //go through every user...
       
       if (usersArray[i].userID == req.params.userID) { //finding a specific user...
@@ -311,144 +304,6 @@ router.get('/addGame/:userID/:gameID/:gameName', function(req, res) {
     
   })
 }); 
-
-
-
-
-//get a userID's username - WORKS
-router.get('/getMyUsername/:userID', function(req, res) {
-
-  let found = false;
-
-  UserSchema.find({}, (err, AllUsers) => {
-
-    usersArray = AllUsers;
-
-
-    for(var i=0; i < usersArray.length; i++)
-    {
-      if( usersArray[i].userID == req.params.userID) 
-      {
-        found = true;
-        res.status(200).json(usersArray[i].userName); 
-      }
-    }
-
-    if(found === false){
-      res.status(500).send("no such user");
-    }
-
-  })
-}); 
-
-
-
-
-//verify login
-router.get('/verifyLogin/:username/:password', function(req, res){
-  UserSchema.find({}, (err, AllUsers) =>{
-
-    console.log("verifyLogin ran.");
-    let foundUserID = -1;
-    let validAuth = false;
-
-    AllUsers.forEach(user => {
-      if (user.userName == req.params.username) {
-        if (user.password == req.params.password) {
-          //auth is valid
-          console.log("valid user, valid password");
-          validAuth = true;
-          foundUserID = user.userID;
-        }
-      }
-    });
-
-    res.status(200).json({
-      isValid: validAuth,
-      userID: foundUserID
-    });
-  })
-});
-
-
-
-
-//create new user - WORKS
-router.get('/createNewUser/:userName/:password', function (req, res) {
-  UserSchema.find({}, (err, AllUsers) => {
-    usersArray = AllUsers;
-    let found = false;
-    let message = "no message";
-
-    usersArray.forEach(element => {
-      if (element.userName == req.params.userName) {
-        found = true;
-        console.log("mongo.username AND params.username are: ");
-        console.log(element.userName);
-        console.log(req.params.userName);
-      }
-    });
-
-
-    if (found == true) {                    //USER ALREADY EXISTS
-      message = "user already exists";
-      console.log("user " + req.params.userName + " already exists");
-      res.status(200).send(message);
-    }
-    else if (found == false) {              //CREATING THIS NEW USER!!!!
-      message = "username is available"
-       
-      //create new user here and add it onto the local array and - SAVE IT!!
-      UserSchema.create({
-        userID: CreateUniqueUserID(usersArray),
-        userName: req.params.userName,
-        password: req.params.password,
-        myGames: [ ]
-      }, function (err, small) {
-        // saved!
-        if (err != null) {
-          let message2 = "got error upon trying to make new user";
-          console.log("got error upon trying to make new user");
-          res.status(200).json({message: message2});
-        }
-        else
-        {
-          let message3 = "Successfully created new user!";
-          console.log("err was null, should have created " + req.params.userName + " user...");
-          res.status(200).json({message: message3});
-        }
-
-      });
-
-    }
-  })
-});
-
-
-
-
-//Update our notes
-/* router.put('/notes/:gameID', function(req, res){
-  var changedNote = req.body;
-
-  NoteSchemaFile.findOneAndUpdate(
-    {gameID: changedNote},
-    changedNote,
-    {new: false},
-    (err, updatedNote) => {
-      if(err){
-        res.status(500).send(err);
-      }
-      res.status(200).json(updatedNote);
-    }
-  )
-
-}); */
-
-
-
-
-
 
 
 ///DELETE GAME - WORKS
@@ -545,6 +400,139 @@ router.get('/deleteGame/:userID/:gameID', function(req, res) {
     
   })
 }); 
+
+
+//get a userID's username - WORKS
+router.get('/getMyUsername/:userID', function(req, res) {
+
+  let found = false;
+
+  UserSchema.find({}, (err, AllUsers) => {
+
+    usersArray = AllUsers;
+
+
+    for(var i=0; i < usersArray.length; i++)
+    {
+      if( usersArray[i].userID == req.params.userID) 
+      {
+        found = true;
+        res.status(200).json(usersArray[i].userName); 
+      }
+    }
+
+    if(found === false){
+      res.status(500).send("no such user");
+    }
+
+  })
+}); 
+
+
+//verifyLogin/Log In - WORKS
+router.get('/verifyLogin/:username/:password', function(req, res){
+  UserSchema.find({}, (err, AllUsers) =>{
+
+    console.log("verifyLogin ran.");
+    let foundUserID = -1;
+    let validAuth = false;
+
+    AllUsers.forEach(user => {
+      if (user.userName == req.params.username) {
+        if (user.password == req.params.password) {
+          //auth is valid
+          console.log("valid user, valid password");
+          validAuth = true;
+          foundUserID = user.userID;
+        }
+      }
+    });
+
+    res.status(200).json({
+      isValid: validAuth,
+      userID: foundUserID
+    });
+  })
+});
+
+
+//create new user - WORKS
+router.get('/createNewUser/:userName/:password', function (req, res) {
+  UserSchema.find({}, (err, AllUsers) => {
+    usersArray = AllUsers;
+    let found = false;
+    let message = "no message";
+
+    usersArray.forEach(element => {
+      if (element.userName == req.params.userName) {
+        found = true;
+        console.log("mongo.username AND params.username are: ");
+        console.log(element.userName);
+        console.log(req.params.userName);
+      }
+    });
+
+
+    if (found == true) {                    //USER ALREADY EXISTS
+      message = "user already exists";
+      console.log("user " + req.params.userName + " already exists");
+      res.status(200).send(message);
+    }
+    else if (found == false) {              //CREATING THIS NEW USER!!!!
+      message = "username is available"
+       
+      //create new user here and add it onto the local array and - SAVE IT!!
+      UserSchema.create({
+        userID: CreateUniqueUserID(usersArray),
+        userName: req.params.userName,
+        password: req.params.password,
+        myGames: [ ]
+      }, function (err, small) {
+        // saved!
+        if (err != null) {
+          let message2 = "got error upon trying to make new user";
+          console.log("got error upon trying to make new user");
+          res.status(200).json({message: message2});
+        }
+        else
+        {
+          let message3 = "Successfully created new user!";
+          console.log("err was null, should have created " + req.params.userName + " user...");
+          res.status(200).json({message: message3});
+        }
+
+      });
+
+    }
+  })
+});
+
+
+
+
+//Update our notes
+/* router.put('/notes/:gameID', function(req, res){
+  var changedNote = req.body;
+
+  NoteSchemaFile.findOneAndUpdate(
+    {gameID: changedNote},
+    changedNote,
+    {new: false},
+    (err, updatedNote) => {
+      if(err){
+        res.status(500).send(err);
+      }
+      res.status(200).json(updatedNote);
+    }
+  )
+
+}); */
+
+
+
+
+
+
 
 
 
