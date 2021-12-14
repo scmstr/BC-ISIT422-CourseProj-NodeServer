@@ -9,7 +9,7 @@ const mongoose = require("mongoose");
 ////schemas
 /////////////
 const GameSchema = require("../GameSchemaFile"); //i dont think we're using the gameschema, since we dont need to access the games collection (they're on the users as an array)
-const NoteSchemaFile = require('../NoteSchemaFile');
+const NoteSchema = require('../NoteSchemaFile');
 const UserSchema = require("../UserSchemaFile");
 
 
@@ -474,9 +474,9 @@ router.get('/createNewUser/:userName/:password', function (req, res) {
 
 
     if (found == true) {                    //USER ALREADY EXISTS
-      message = "user already exists";
+      message = "Error: User already exists...";
       console.log("user " + req.params.userName + " already exists");
-      res.status(200).send(message);
+      res.status(200).send({message: message});
     }
     else if (found == false) {              //CREATING THIS NEW USER!!!!
       message = "username is available"
@@ -490,7 +490,7 @@ router.get('/createNewUser/:userName/:password', function (req, res) {
       }, function (err, small) {
         // saved!
         if (err != null) {
-          let message2 = "got error upon trying to make new user";
+          let message2 = "Error upon trying to make new user. Contact site admin.";
           console.log("got error upon trying to make new user");
           res.status(200).json({message: message2});
         }
@@ -510,48 +510,68 @@ router.get('/createNewUser/:userName/:password', function (req, res) {
 
 
 
-//Update our notes
-/* router.put('/notes/:gameID', function(req, res){
-  var changedNote = req.body;
 
-  NoteSchemaFile.findOneAndUpdate(
-    {gameID: changedNote},
-    changedNote,
-    {new: false},
-    (err, updatedNote) => {
-      if(err){
-        res.status(500).send(err);
+//create note - WORKS
+router.get('/createNote/:gameID/:userID/:noteContent', function (req, res) {
+  let tempNotesArray;
+  NoteSchema.find({}, (err, AllNotes) => {
+    tempNotesArray = AllNotes;
+
+
+    NoteSchema.create({
+      noteID: GenerateUniqueNoteID(tempNotesArray),
+      userID: req.params.userID,
+      gameID: req.params.gameID,
+      noteContent: req.params.noteContent,
+      noteDate: CreateTimestamp(),
+    }, function(err,result) {
+      // saved!
+      if (err != null) {
+      let message2 = "Error upon trying to make new note. Contact site admin.";
+      console.log("got error upon trying to make new note");
+      res.status(200).json({message: message2});
       }
-      res.status(200).json(updatedNote);
-    }
-  )
+      else
+      {
+        let message3 = "Successfully created new note!";
+        console.log("err was null, should have created " + req.params.userName + " user...");
+        res.status(200).json({message: message3});
+      }
+    })
 
-}); */
+  })
 
-
-
-
-
-
-
-
-
-
-
-//post a new note
-router.post('/noteDetails/:note', function(req, res){
-  var newNote = (req.body);
-  insertNote = new NoteSchemaFile(newNote);
-  console.log(insertNote);
-  insertNote.save((err, note)=>{
-    if(err){
-      res.status(500).send(err);
-    }
-    else{
-      res.status(201).json(note);
-    }
-  });
 });
+
+
+
+//get ALL notes for THIS GAME and USER
+router.get('/notesForThisGameAndUser/:gameID/:userID', function(req, res) {
+  console.log("notesForThisGameAndUser accessed");
+  let outputArray = [];
+
+  NoteSchema.find({}, (err, AllNotes) => {
+
+    tempNotesArray = AllNotes;
+    console.log("userSchema.find ran.");
+
+    for(var i=0; i < tempNotesArray.length; i++)
+    {
+      console.log("searching for relevant notes... for inputUserID: [" + req.params.userID + "] and inputGameID:[" + req.params.gameID + "].");
+      if( (tempNotesArray[i].userID == req.params.userID)  && (tempNotesArray[i].gameID == req.params.gameID)) 
+      {
+        outputArray.push(tempNotesArray[i]);
+        console.log("found a note! Added to output!");
+      }
+    }
+
+    console.log("ending notesForThisGameAndUser...");
+    res.status(200).send(outputArray);
+ 
+
+  })
+}); 
+
 
 
 
@@ -579,6 +599,7 @@ function CreateTimestamp() {
 }
 
 
+
 //generate unique userID - WORKS
 function CreateUniqueUserID(pExistingUsersArray) {
 
@@ -603,6 +624,27 @@ function CreateUniqueUserID(pExistingUsersArray) {
 }
 
 
+function GenerateUniqueNoteID(pExistingNotesArray) {
+
+  let found = true;
+  let testingID = -1;
+
+  while (found == true) {
+    found = false;
+    testingID = Math.floor(Math.random() * 10000000);
+
+    for (let i = 0; i < pExistingNotesArray.length; i++) {
+      if (testingID == pExistingNotesArray[i].noteID) {
+        found = true;
+      }
+    }
+  }
+
+  console.log("looked for a unique userID between 1 and 10,000,000 and found this: ");
+  console.log(testingID);
+
+  return testingID;
+}
 
 
 
