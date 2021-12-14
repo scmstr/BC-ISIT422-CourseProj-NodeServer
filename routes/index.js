@@ -344,7 +344,6 @@ router.get('/getMyUsername/:userID', function(req, res) {
 
 
 
-
 //verify login
 router.get('/verifyLogin/:username/:password', function(req, res){
   UserSchema.find({}, (err, AllUsers) =>{
@@ -362,8 +361,7 @@ router.get('/verifyLogin/:username/:password', function(req, res){
 
 
 
-
-//create new user GET
+//create new user - WORKS
 router.get('/createNewUser/:userName/:password', function (req, res) {
   UserSchema.find({}, (err, AllUsers) => {
     usersArray = AllUsers;
@@ -382,17 +380,13 @@ router.get('/createNewUser/:userName/:password', function (req, res) {
 
     if (found == true) {                    //USER ALREADY EXISTS
       message = "user already exists";
+      console.log("user " + req.params.userName + " already exists");
       res.status(200).send(message);
     }
     else if (found == false) {              //CREATING THIS NEW USER!!!!
       message = "username is available"
        
-      //create new user here and add it onto the local array
-      
-
-
-
-      //save it!
+      //create new user here and add it onto the local array and - SAVE IT!!
       UserSchema.create({
         userID: CreateUniqueUserID(usersArray),
         userName: req.params.userName,
@@ -400,25 +394,21 @@ router.get('/createNewUser/:userName/:password', function (req, res) {
         myGames: [ ]
       }, function (err, small) {
         // saved!
-        console.log("userSchema.create() ran returned this error: ");
-        console.log(err);
-        console.log("userSchema.create() ran returned this 'small': ");
-        console.log(small);
+        if (err != null) {
+          let message2 = "got error upon trying to make new user";
+          console.log("got error upon trying to make new user");
+          res.status(200).json({message: message2});
+        }
+        else
+        {
+          let message3 = "Successfully created new user!";
+          console.log("err was null, should have created " + req.params.userName + " user...");
+          res.status(200).json({message: message3});
+        }
+
       });
 
-      
-
-
-      message = "Successfully created new user!";
-      res.status(200).send(message);
-
     }
-    else                                                 //SHOULD NEVER GET HERE, CATCHING BIZZARE ERRORS
-    {
-      message = "Code should never get here";
-      res.status(200).send(message);
-    }
-
   })
 });
 
@@ -449,7 +439,7 @@ router.get('/createNewUser/:userName/:password', function (req, res) {
 
 
 
-///DELETE GAME
+///DELETE GAME - WORKS
 router.get('/deleteGame/:userID/:gameID', function(req, res) {
   console.log("deleteGame endpoint accessed.");
   console.log("game trying to delete is: " + req.params.gameID);
@@ -572,31 +562,14 @@ module.exports = router;
 
 
 
-///////////////// NODE STUFF:
-  //node stuff:
-
-  //need:
-    //create new user method - generates unique userID!
-    //checkAuth method
-    //get all notes for a user
-    //add note
-    //???update a note?
-    //add a game to a user
-    //remove a game from a user
-    //update a game for a user
-  //
 
 
-  //sync game schema to:
-    //  gameID, dateTime, gameName
-  //
-
-  //sync user schema to: 
-    //UID, username, password, myGames
-  //
-//
 
 
+
+
+
+//generate timstamp - WORKS
 function CreateTimestamp() {
   let output = Date;
   let timestamp = Date.now();
@@ -605,6 +578,8 @@ function CreateTimestamp() {
   return timestamp;
 }
 
+
+//generate unique userID - WORKS
 function CreateUniqueUserID(pExistingUsersArray) {
 
   let found = true;
