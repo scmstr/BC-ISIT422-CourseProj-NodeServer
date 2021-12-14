@@ -8,7 +8,7 @@ const mongoose = require("mongoose");
 /////////////
 ////schemas
 /////////////
-const GameSchema = require("../GameSchemaFile");
+const GameSchema = require("../GameSchemaFile"); //i dont think we're using the gameschema, since we dont need to access the games collection (they're on the users as an array)
 const NoteSchemaFile = require('../NoteSchemaFile');
 const UserSchema = require("../UserSchemaFile");
 
