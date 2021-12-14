@@ -146,7 +146,7 @@ router.get('/getMyGames/:userID', function(req, res) {
 
 
     if(found === false){
-      res.status(200).send("no such user");
+      res.status(200).send({message: "no such user"});
     }
 
     console.log("entire usersArray: ");
@@ -348,14 +348,26 @@ router.get('/getMyUsername/:userID', function(req, res) {
 router.get('/verifyLogin/:username/:password', function(req, res){
   UserSchema.find({}, (err, AllUsers) =>{
 
+    console.log("verifyLogin ran.");
+    let foundUserID = -1;
+    let validAuth = false;
+
+    AllUsers.forEach(user => {
+      if (user.userName == req.params.username) {
+        if (user.password == req.params.password) {
+          //auth is valid
+          console.log("valid user, valid password");
+          validAuth = true;
+          foundUserID = user.userID;
+        }
+      }
+    });
+
+    res.status(200).json({
+      isValid: validAuth,
+      userID: foundUserID
+    });
   })
-  var data = {
-    "verifyLogin":{
-      "2": req.params.username,
-      "password1": req.params.password
-    }
-  };
-  send.json(data);
 });
 
 
