@@ -72,7 +72,6 @@ function Note(pDateTime, pNoteContent, pUID, pGameID) {
 
 
 
-
 // //GET home page. - don't think we need this for GamerHelperApp?
 // router.get('/', function(req, res) {
 //   res.sendFile('respond with a resource');
@@ -221,7 +220,7 @@ router.get('/isGameInMyGames/:gameID/:userID', function(req, res) {
 
 
 
-//lets make it so we can ADD a game to a user's myGames list - NEEDS TIMESTAMP ON GAME CONSTRUCTOR - 
+//lets make it so we can ADD a game to a user's myGames list - NEEDS TIMESTAMP ON GAME CONSTRUCTOR - WORKS
 router.get('/addGame/:userID/:gameID/:gameName', function(req, res) {
   console.log("addGame endpoint accessed.");
   
@@ -360,6 +359,68 @@ router.get('/verifyLogin/:username/:password', function(req, res){
   send.json(data);
 });
 
+
+
+
+
+//create new user GET
+router.get('/createNewUser/:userName/:password', function (req, res) {
+  UserSchema.find({}, (err, AllUsers) => {
+    usersArray = AllUsers;
+    let found = false;
+    let message = "no message";
+
+    usersArray.forEach(element => {
+      if (element.userName == req.params.userName) {
+        found = true;
+        console.log("mongo.username AND params.username are: ");
+        console.log(element.userName);
+        console.log(req.params.userName);
+      }
+    });
+
+
+    if (found == true) {                    //USER ALREADY EXISTS
+      message = "user already exists";
+      res.status(200).send(message);
+    }
+    else if (found == false) {              //CREATING THIS NEW USER!!!!
+      message = "username is available"
+       
+      //create new user here and add it onto the local array
+      
+
+
+
+      //save it!
+      UserSchema.create({
+        userID: CreateUniqueUserID(usersArray),
+        userName: req.params.userName,
+        password: req.params.password,
+        myGames: [ ]
+      }, function (err, small) {
+        // saved!
+        console.log("userSchema.create() ran returned this error: ");
+        console.log(err);
+        console.log("userSchema.create() ran returned this 'small': ");
+        console.log(small);
+      });
+
+      
+
+
+      message = "Successfully created new user!";
+      res.status(200).send(message);
+
+    }
+    else                                                 //SHOULD NEVER GET HERE, CATCHING BIZZARE ERRORS
+    {
+      message = "Code should never get here";
+      res.status(200).send(message);
+    }
+
+  })
+});
 
 
 
@@ -544,13 +605,27 @@ function CreateTimestamp() {
   return timestamp;
 }
 
+function CreateUniqueUserID(pExistingUsersArray) {
 
+  let found = true;
+  let testingID = -1;
 
+  while (found == true) {
+    found = false;
+    testingID = Math.floor(Math.random() * 10000000);
+    
+    for (let i = 0; i < pExistingUsersArray.length; i++) {
+      if (testingID == pExistingUsersArray[i].userID) {
+        found = true;
+      }
+    }
+  }
 
+  console.log("looked for a unique userID between 1 and 10,000,000 and found this: ");
+  console.log(testingID);
 
-
-
-
+  return testingID;
+}
 
 
 
