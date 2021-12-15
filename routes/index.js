@@ -545,8 +545,8 @@ router.get('/createNote/:gameID/:userID/:noteContent', function (req, res) {
 
 
 
-//get ALL notes for THIS GAME and USER
-router.get('/notesForThisGameAndUser/:gameID/:userID', function(req, res) {
+//get ALL notes for THIS GAME and USER - WORKS
+router.get('/getNotesForThisGameAndUser/:gameID/:userID', function(req, res) {
   console.log("notesForThisGameAndUser accessed");
   let outputArray = [];
 
@@ -571,6 +571,41 @@ router.get('/notesForThisGameAndUser/:gameID/:userID', function(req, res) {
 
   })
 }); 
+
+
+//Get the last 3 notes for a user - WORKS
+router.get('/getLastThreeNotesForUser/:userID', function(req,res) {
+
+  console.log("getLastThreeNotesForUser endpoint accessed.")
+  let tempNotesArray = [];
+
+  NoteSchema.find({}, (err, AllNotes) => {
+
+    allNotes = AllNotes;
+
+    //req.params.userID
+
+
+    allNotes.forEach(aNote => {
+      if (aNote.userID == req.params.userID) {
+        tempNotesArray.push(aNote);
+      }
+    });
+
+    tempNotesArray.sort(NoteSorter);
+
+    tempNotesArray.splice(0,2);
+    console.log("tempNotesArray content: ");
+    console.log(tempNotesArray);
+
+    console.log("ending getLastThreeNotesForUser...");
+    res.status(200).send(tempNotesArray);
+
+
+  })
+
+
+})
 
 
 
@@ -648,6 +683,17 @@ function GenerateUniqueNoteID(pExistingNotesArray) {
 
 
 
+
+//to sort notes chronologically - WORKS
+function NoteSorter( a, b ) {
+  if ( a.noteDate < b.noteDate ){
+    return 1;
+  }
+  if ( a.noteDate > b.noteDate ){
+    return -1;
+  }
+  return 0;
+}
 
 
 
