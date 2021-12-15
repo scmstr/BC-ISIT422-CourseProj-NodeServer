@@ -581,20 +581,23 @@ router.get('/getLastThreeNotesForUser/:userID', function(req,res) {
 
   NoteSchema.find({}, (err, AllNotes) => {
 
-    allNotes = AllNotes;
+    let allNotes1 = AllNotes;
+    console.log("AllNotes1 content: ");
+    console.log(allNotes1);
 
     //req.params.userID
 
 
-    allNotes.forEach(aNote => {
+    allNotes1.forEach(aNote => {
       if (aNote.userID == req.params.userID) {
         tempNotesArray.push(aNote);
       }
     });
 
-    tempNotesArray.sort(NoteSorter);
+    tempNotesArray = tempNotesArray.sort(NoteSorter);
 
-    tempNotesArray.splice(0,2);
+    tempNotesArray = tempNotesArray.slice(0, 3);
+
     console.log("tempNotesArray content: ");
     console.log(tempNotesArray);
 
